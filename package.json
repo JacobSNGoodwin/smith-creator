@@ -1,0 +1,15 @@
+{
+  "name": "smith-creator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "smith.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^5.7.0",
+    "mathjs": "^5.1.1"
+  }
+}
