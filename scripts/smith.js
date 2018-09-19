@@ -2,8 +2,6 @@
 import * as d3 from 'd3'
 import * as math from 'mathjs'
 
-// import config file
-import { smithConfig } from './smith.config';
 
 /*
 * First we include functions for computing arcs on Smith chart for for going betwee
@@ -127,10 +125,11 @@ export function createSmith(smithConfig) {
     .range([0, -2 * Math.PI])
 
   // select data from major lines array
-  let paths = g.selectAll("path").data(smithConfig.constantCircles)
+  let realPaths = g.selectAll("path").data(smithConfig.realCircles.values)
+  let imagPaths = g.selectAll("path").data(smithConfig.imagCircles.values)
 
   // real circles
-  paths.enter()
+  realPaths.enter()
     .append("path")
     .attr("d", (d) => {
       const arc = getRealArc(d, 1E6, -1E6)
@@ -138,12 +137,12 @@ export function createSmith(smithConfig) {
       realCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true)
       return realCircle
     })
-    .attr("stroke", "blue")
+    .attr("stroke", smithConfig.realCircles.color)
     .attr("stroke-width", 0.005)
     .attr("fill", "none")
 
   // postive imag circles
-  paths.enter()
+  imagPaths.enter()
     .append("path")
     .attr("d", (d) => {
       const arc = getImagArc(d, 0, 1E6)
@@ -151,12 +150,12 @@ export function createSmith(smithConfig) {
       imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true)
       return imagCircle
     })
-    .attr("stroke", "red")
+    .attr("stroke", smithConfig.imagCircles.color)
     .attr("stroke-width", 0.005)
     .attr("fill", "none")
   
     // negative imag circles
-  paths.enter()
+  imagPaths.enter()
     .append("path")
     .attr("d", (d) => {
       const arc = getImagArc(-d, 0, 1E6)
@@ -164,7 +163,7 @@ export function createSmith(smithConfig) {
       imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2))
       return imagCircle
     })
-    .attr("stroke", "red")
+    .attr("stroke", smithConfig.imagCircles.color)
     .attr("stroke-width", 0.005)
     .attr("fill", "none")
 
@@ -173,7 +172,7 @@ export function createSmith(smithConfig) {
   outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true)
   g.append("path")
     .attr("d", outerCirlce)
-    .attr("stroke", "blue")
+    .attr("stroke", smithConfig.realCircles.color)
     .attr("stroke-width", 0.005)
     .attr("fill", "none")
 
@@ -183,7 +182,7 @@ export function createSmith(smithConfig) {
   imagLine.lineTo(x(1), y(0))
   g.append("path")
     .attr("d", imagLine)
-    .attr("stroke", "red")
+    .attr("stroke", smithConfig.imagCircles.color)
     .attr("stroke-width", 0.005)
     .attr("fill", "none")
 }
