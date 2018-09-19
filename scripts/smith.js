@@ -1,4 +1,4 @@
-import * as d3 from 'd3';
+import * as d3 from 'd3'
 import * as math from 'mathjs'
 
 /*
@@ -7,16 +7,16 @@ import * as math from 'mathjs'
 */
 
 function zLoadNormalizedToGamma(zLoadNormalized) {
-  const numerator =  math.subtract(zLoadNormalized, 1);
-  const denominator =  math.add(zLoadNormalized, 1);
-  return math.divide(numerator, denominator);
+  const numerator =  math.subtract(zLoadNormalized, 1)
+  const denominator =  math.add(zLoadNormalized, 1)
+  return math.divide(numerator, denominator)
 }
 
 
 function gammaToZLoadNormalized(gamma) {
-  const numerator = math.add(1, gamma);
-  const denominator = math.subtract(1, gamma);
-  return math.divide(numerator, denominator);
+  const numerator = math.add(1, gamma)
+  const denominator = math.subtract(1, gamma)
+  return math.divide(numerator, denominator)
 }
 
 /*
@@ -29,20 +29,20 @@ function gammaToZLoadNormalized(gamma) {
 * These numbers will feed into the d3.pth.arcTo path generator funtion
 */
 function getRealArc(rL, xL1, xL2) {
-  const zL1 = math.complex(rL, xL1); // normzlied impedance of arc start
+  const zL1 = math.complex(rL, xL1) // normzlied impedance of arc start
                                               // Don't need to compute conjugate because of symmetry
-  const zL2 = math.complex(rL, xL2);
-  const gamma1 = zLoadNormalizedToGamma(zL1);
-  const gamma2 = zLoadNormalizedToGamma(zL2);
+  const zL2 = math.complex(rL, xL2)
+  const gamma1 = zLoadNormalizedToGamma(zL1)
+  const gamma2 = zLoadNormalizedToGamma(zL2)
 
-  const radius = 1 / (1+ rL);
-  const cx = rL / (1 + rL);
-  const cy =  0;
+  const radius = 1 / (1+ rL)
+  const cx = rL / (1 + rL)
+  const cy =  0
 
 
   // get angles from centers to gamma crossings
-  let angle1 = math.subtract(gamma1, math.complex(cx, cy)).toPolar().phi;
-  let angle2 = math.subtract(gamma2, math.complex(cx, cy)).toPolar().phi;
+  let angle1 = math.subtract(gamma1, math.complex(cx, cy)).toPolar().phi
+  let angle2 = math.subtract(gamma2, math.complex(cx, cy)).toPolar().phi
 
   // Keep angles positive for simplicity
   if (angle1 < 0) {
@@ -61,19 +61,19 @@ function getRealArc(rL, xL1, xL2) {
 * Similar to above, except for section of the imaginary impedance arc
 */
 function getImagArc(xL, rL1, rL2) {
-  const zL1 = math.complex(rL1, xL);
-  const zL2 = math.complex(rL2, xL);
+  const zL1 = math.complex(rL1, xL)
+  const zL2 = math.complex(rL2, xL)
 
-  const gamma1 = zLoadNormalizedToGamma(zL1);
-  const gamma2 = zLoadNormalizedToGamma(zL2);
+  const gamma1 = zLoadNormalizedToGamma(zL1)
+  const gamma2 = zLoadNormalizedToGamma(zL2)
 
-  const radius = Math.abs(1 / xL);
-  const cx = 1;
-  const cy = 1 / xL;
+  const radius = Math.abs(1 / xL)
+  const cx = 1
+  const cy = 1 / xL
 
    // get angles from centers to gamma crossings
-  let angle1 = math.subtract(gamma1, math.complex(cx, cy)).toPolar().phi;
-  let angle2 = math.subtract(gamma2, math.complex(cx, cy)).toPolar().phi;
+  let angle1 = math.subtract(gamma1, math.complex(cx, cy)).toPolar().phi
+  let angle2 = math.subtract(gamma2, math.complex(cx, cy)).toPolar().phi
   // Keep angles positive for simplicity
   if (angle1 < 0) {
     angle1 = angle1 + 2 * Math.PI
@@ -94,7 +94,7 @@ function getImagArc(xL, rL1, rL2) {
 */
 
 export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
-  const margin = 0.05; // gives a little space between svg and container
+  const margin = 0.05 // gives a little space between svg and container
 
   // set up container with the main svg and g for the chart
   let g = d3.select("#smith-container")
@@ -103,36 +103,36 @@ export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
       .attr("viewBox", "0 0 " + (1 + 2*margin) + " " + (1 + 2*margin))
     .append("g")
       .attr("transform", "translate(" + margin 
-        + ", " + margin + ")");
+        + ", " + margin + ")")
 
 
   // scales for x (gamma_real), y (gamma_imag), radius, and angle
   const x = d3.scaleLinear()
     .domain([-1, 1])
-    .range([0, 1]);
+    .range([0, 1])
   const y = d3.scaleLinear()
     .domain([-1, 1])
-    .range([1, 0]);
+    .range([1, 0])
   const r = d3.scaleLinear()
     .domain([0, 1])
-    .range([0, 0.5]);
+    .range([0, 0.5])
 
   // Angles go in reverse direction in svg, so we just reverse them   
   const a = d3.scaleLinear()
     .domain([0, 2 * Math.PI])
-    .range([0, -2 * Math.PI]);
+    .range([0, -2 * Math.PI])
 
   // select data from major lines array
-  let paths = g.selectAll("path").data(constantCircles);
+  let paths = g.selectAll("path").data(constantCircles)
 
   // real circles
   paths.enter()
     .append("path")
     .attr("d", (d) => {
-      const arc = getRealArc(d, 1E6, -1E6);
-      let realCircle = d3.path();
-      realCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true);
-      return realCircle;
+      const arc = getRealArc(d, 1E6, -1E6)
+      let realCircle = d3.path()
+      realCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true)
+      return realCircle
     })
     .attr("stroke", "blue")
     .attr("stroke-width", 0.005)
@@ -142,29 +142,29 @@ export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
   paths.enter()
     .append("path")
     .attr("d", (d) => {
-      const arc = getImagArc(d, 0, 1E6);
-      let imagCircle = d3.path();
-      imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true);
-      return imagCircle;
+      const arc = getImagArc(d, 0, 1E6)
+      let imagCircle = d3.path()
+      imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true)
+      return imagCircle
     })
     .attr("stroke", "red")
     .attr("stroke-width", 0.005)
-    .attr("fill", "none");
+    .attr("fill", "none")
   paths.enter()
     .append("path")
     .attr("d", (d) => {
-      const arc = getImagArc(-d, 0, 1E6);
-      let imagCircle = d3.path();
-      imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2));
-      return imagCircle;
+      const arc = getImagArc(-d, 0, 1E6)
+      let imagCircle = d3.path()
+      imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2))
+      return imagCircle
     })
     .attr("stroke", "red")
     .attr("stroke-width", 0.005)
-    .attr("fill", "none");
+    .attr("fill", "none")
 
   // outer circle
-  let outerCirlce = d3.path();
-  outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true);
+  let outerCirlce = d3.path()
+  outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true)
   g.append("path")
     .attr("d", outerCirlce)
     .attr("stroke", "blue")
@@ -172,9 +172,9 @@ export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
     .attr("fill", "none")
 
   // imag = 0 line
-  let imagLine = d3.path();
-  imagLine.moveTo(x(-1), y(0));
-  imagLine.lineTo(x(1), y(0));
+  let imagLine = d3.path()
+  imagLine.moveTo(x(-1), y(0))
+  imagLine.lineTo(x(1), y(0))
   g.append("path")
     .attr("d", imagLine)
     .attr("stroke", "red")
@@ -182,4 +182,4 @@ export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
     .attr("fill", "none")
 }
 
-createSmith();
+createSmith()
