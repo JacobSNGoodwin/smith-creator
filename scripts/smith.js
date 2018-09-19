@@ -1,5 +1,9 @@
+// dependencies
 import * as d3 from 'd3'
 import * as math from 'mathjs'
+
+// import config file
+import { smithConfig } from './smith.config';
 
 /*
 * First we include functions for computing arcs on Smith chart for for going betwee
@@ -93,7 +97,7 @@ function getImagArc(xL, rL1, rL2) {
 * The spacing defines the gamma points where constant z circles cross
 */
 
-export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
+export function createSmith(smithConfig) {
   const margin = 0.05 // gives a little space between svg and container
 
   // set up container with the main svg and g for the chart
@@ -123,7 +127,7 @@ export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
     .range([0, -2 * Math.PI])
 
   // select data from major lines array
-  let paths = g.selectAll("path").data(constantCircles)
+  let paths = g.selectAll("path").data(smithConfig.constantCircles)
 
   // real circles
   paths.enter()
@@ -150,6 +154,8 @@ export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
     .attr("stroke", "red")
     .attr("stroke-width", 0.005)
     .attr("fill", "none")
+  
+    // negative imag circles
   paths.enter()
     .append("path")
     .attr("d", (d) => {
@@ -162,7 +168,7 @@ export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
     .attr("stroke-width", 0.005)
     .attr("fill", "none")
 
-  // outer circle
+  // outer real circle
   let outerCirlce = d3.path()
   outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true)
   g.append("path")
@@ -181,5 +187,3 @@ export function createSmith(constantCircles = [0.2, 0.5, 1, 2, 5, 10]) {
     .attr("stroke-width", 0.005)
     .attr("fill", "none")
 }
-
-createSmith()
