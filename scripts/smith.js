@@ -112,7 +112,25 @@ export class SmithChart {
     this._imagLineColor = imagLineColor
   }
 
+  setRealLineValues() {
+    
+  }
 
+  setImagLineValues() {
+
+  }
+
+  setMargin() {
+
+  }
+
+  setRealLineColor() {
+
+  }
+
+  setImagLine(Color) {
+
+  }
 
   create() {
     // method to draw the initially created Smith Chart
