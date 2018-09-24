@@ -1,6 +1,5 @@
-import { createSmith } from './smith';
+import { SmithChart } from './smith';
 
-// import config file
-import { smithConfig } from './smith.config';
+let smithChart = new SmithChart();
 
-createSmith(smithConfig);
+smithChart.create();

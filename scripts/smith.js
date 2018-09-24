@@ -95,94 +95,116 @@ function getImagArc(xL, rL1, rL2) {
 * The spacing defines the gamma points where constant z circles cross
 */
 
-export function createSmith(smithConfig) {
-  const margin = 0.05 // gives a little space between svg and container
+export class SmithChart {
 
-  // set up container with the main svg and g for the chart
-  let g = d3.select("#smith-container")
+  constructor(
+    margin = 0.05,
+    realLineValues = [0.2, 0.5, 1, 2, 5, 10],
+    imagLineValues = [0.2, 0.5, 1, 2, 5, 10],
+    realLineColor = 'green',
+    imagLineColor = 'red',
+
+  ) {
+    this._margin = margin;
+    this._realLineValues = realLineValues,
+    this._imagLineValues = imagLineValues,
+    this._realLineColor = realLineColor,
+    this._imagLineColor = imagLineColor
+  }
+
+
+
+  create() {
+    // method to draw the initially created Smith Chart
+
+    // set up container with the main svg and g for the chart
+    let g = d3.select("#smith-container")
     .append("svg")
       .attr("preserveAspectRatio", "xMinYMin meet")
-      .attr("viewBox", "0 0 " + (1 + 2*margin) + " " + (1 + 2*margin))
+      .attr("viewBox", "0 0 " + (1 + 2*this._margin) + " " + (1 + 2*this._margin))
     .append("g")
-      .attr("transform", "translate(" + margin 
-        + ", " + margin + ")")
+      .attr("transform", "translate(" + this._margin 
+        + ", " + this._margin + ")")
 
 
-  // scales for x (gamma_real), y (gamma_imag), radius, and angle
-  const x = d3.scaleLinear()
-    .domain([-1, 1])
-    .range([0, 1])
-  const y = d3.scaleLinear()
-    .domain([-1, 1])
-    .range([1, 0])
-  const r = d3.scaleLinear()
-    .domain([0, 1])
-    .range([0, 0.5])
+    // scales for x (gamma_real), y (gamma_imag), radius, and angle
+    const x = d3.scaleLinear()
+      .domain([-1, 1])
+      .range([0, 1])
+    const y = d3.scaleLinear()
+      .domain([-1, 1])
+      .range([1, 0])
+    const r = d3.scaleLinear()
+      .domain([0, 1])
+      .range([0, 0.5])
 
-  // Angles go in reverse direction in svg, so we just reverse them   
-  const a = d3.scaleLinear()
-    .domain([0, 2 * Math.PI])
-    .range([0, -2 * Math.PI])
+    // Angles go in reverse direction in svg, so we just reverse them   
+    const a = d3.scaleLinear()
+      .domain([0, 2 * Math.PI])
+      .range([0, -2 * Math.PI])
 
-  // select data from major lines array
-  let realPaths = g.selectAll("path").data(smithConfig.realCircles.values)
-  let imagPaths = g.selectAll("path").data(smithConfig.imagCircles.values)
+    // select data from major lines array
+    let realPaths = g.selectAll("path").data(this._realLineValues)
+    let imagPaths = g.selectAll("path").data(this._imagLineValues)
 
-  // real circles
-  realPaths.enter()
-    .append("path")
-    .attr("d", (d) => {
-      const arc = getRealArc(d, 1E6, -1E6)
-      let realCircle = d3.path()
-      realCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true)
-      return realCircle
-    })
-    .attr("stroke", smithConfig.realCircles.color)
-    .attr("stroke-width", 0.005)
-    .attr("fill", "none")
+    // real circles
+    realPaths.enter()
+      .append("path")
+      .attr("d", (d) => {
+        const arc = getRealArc(d, 1E6, -1E6)
+        let realCircle = d3.path()
+        realCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true)
+        return realCircle
+      })
+      .attr("stroke", this._realLineColor)
+      .attr("stroke-width", 0.005)
+      .attr("fill", "none")
 
-  // postive imag circles
-  imagPaths.enter()
-    .append("path")
-    .attr("d", (d) => {
-      const arc = getImagArc(d, 0, 1E6)
-      let imagCircle = d3.path()
-      imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true)
-      return imagCircle
-    })
-    .attr("stroke", smithConfig.imagCircles.color)
-    .attr("stroke-width", 0.005)
-    .attr("fill", "none")
+    // postive imag circles
+    imagPaths.enter()
+      .append("path")
+      .attr("d", (d) => {
+        const arc = getImagArc(d, 0, 1E6)
+        let imagCircle = d3.path()
+        imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2), true)
+        return imagCircle
+      })
+      .attr("stroke", this._imagLineColor)
+      .attr("stroke-width", 0.005)
+      .attr("fill", "none")
+
+      // negative imag circles
+    imagPaths.enter()
+      .append("path")
+      .attr("d", (d) => {
+        const arc = getImagArc(-d, 0, 1E6)
+        let imagCircle = d3.path()
+        imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2))
+        return imagCircle
+      })
+      .attr("stroke", this._imagLineColor)
+      .attr("stroke-width", 0.005)
+      .attr("fill", "none")
+
+    // outer real circle
+    let outerCirlce = d3.path()
+    outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true)
+    g.append("path")
+      .attr("d", outerCirlce)
+      .attr("stroke", this._imagLineColor)
+      .attr("stroke-width", 0.005)
+      .attr("fill", "none")
+
+    // imag = 0 line
+    let imagLine = d3.path()
+    imagLine.moveTo(x(-1), y(0))
+    imagLine.lineTo(x(1), y(0))
+    g.append("path")
+      .attr("d", imagLine)
+      .attr("stroke", this._imagLineColor)
+      .attr("stroke-width", 0.005)
+      .attr("fill", "none")
+
+  }
   
-    // negative imag circles
-  imagPaths.enter()
-    .append("path")
-    .attr("d", (d) => {
-      const arc = getImagArc(-d, 0, 1E6)
-      let imagCircle = d3.path()
-      imagCircle.arc(x(arc.cx), y(arc.cy), r(arc.radius), a(arc.angle1), a(arc.angle2))
-      return imagCircle
-    })
-    .attr("stroke", smithConfig.imagCircles.color)
-    .attr("stroke-width", 0.005)
-    .attr("fill", "none")
-
-  // outer real circle
-  let outerCirlce = d3.path()
-  outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true)
-  g.append("path")
-    .attr("d", outerCirlce)
-    .attr("stroke", smithConfig.realCircles.color)
-    .attr("stroke-width", 0.005)
-    .attr("fill", "none")
-
-  // imag = 0 line
-  let imagLine = d3.path()
-  imagLine.moveTo(x(-1), y(0))
-  imagLine.lineTo(x(1), y(0))
-  g.append("path")
-    .attr("d", imagLine)
-    .attr("stroke", smithConfig.imagCircles.color)
-    .attr("stroke-width", 0.005)
-    .attr("fill", "none")
 }
