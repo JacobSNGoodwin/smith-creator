@@ -4,7 +4,7 @@ import * as math from 'mathjs'
 
 
 /*
-* First we include functions for computing arcs on Smith chart for for going betwee
+* First we include functions for computing arcs on Smith chart for going between
 * gamma and normalized load impedance
 */
 
@@ -124,12 +124,12 @@ export class SmithChart {
 
   }
 
-  setRealLineColor() {
-
+  setRealLineColor(realLineColor) {
+    this._realLineColor = realLineColor; 
   }
 
-  setImagLine(Color) {
-
+  setImagLineColor(imagLineColor) {
+    this._imagLineColor = imagLineColor;
   }
 
   create() {
