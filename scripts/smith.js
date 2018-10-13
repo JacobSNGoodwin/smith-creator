@@ -209,7 +209,7 @@ export class SmithChart {
     outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true)
     g.append("path")
       .attr("d", outerCirlce)
-      .attr("stroke", this._imagLineColor)
+      .attr("stroke", this._realLineColor)
       .attr("stroke-width", 0.005)
       .attr("fill", "none")
 
