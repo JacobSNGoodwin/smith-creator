@@ -101,50 +101,56 @@ export class SmithChart {
     margin = 0.05,
     realLineValues = [0.2, 0.5, 1, 2, 5, 10],
     imagLineValues = [0.2, 0.5, 1, 2, 5, 10],
-    realLineColor = 'green',
+    realLineColor = '#0f0f0f',
     imagLineColor = 'red',
 
   ) {
-    this._margin = margin;
-    this._realLineValues = realLineValues,
-    this._imagLineValues = imagLineValues,
-    this._realLineColor = realLineColor,
+    // initial smith chart properties
+    this._margin = margin
+    this._realLineValues = realLineValues
+    this._imagLineValues = imagLineValues
+    this._realLineColor = realLineColor
     this._imagLineColor = imagLineColor
+    this._svg = d3.select("#smith-container")
+      .append("svg")
+    this._g = this._svg.append('g') // initialize first group
+    this.setMargin(this._margin) // method can also be called prior to updates
+    this._realGroup = this._g.append('g') // group for real lines
+    this._imagGroup1 = this._g.append('g') // group for positive imaginary lines
+    this._imagGroup2 = this._g.append('g') // group for negative imaginary lines
+    this._outerCircle = this._g.append('path')
+    this._imagLine = this._g.append('path')
+
   }
 
-  setRealLineValues() {
-    
+  setRealLineValues(realLineValues) {
+    this._realLineValues = realLineValues
   }
 
-  setImagLineValues() {
-
+  setImagLineValues(imagLineValues) {
+    this._imagLineValues = imagLineValues
   }
 
-  setMargin() {
-
+  setMargin(margin) {
+    this._margin = margin
+    this._svg
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("viewBox", "0 0 " + (1 + 2*this._margin) + " " + (1 + 2*this._margin))
+    this._g
+      .attr("transform", "translate(" + this._margin 
+      + ", " + this._margin + ")")
   }
 
   setRealLineColor(realLineColor) {
-    this._realLineColor = realLineColor; 
+    this._realLineColor = realLineColor
   }
 
   setImagLineColor(imagLineColor) {
-    this._imagLineColor = imagLineColor;
+    this._imagLineColor = imagLineColor
   }
+    
 
-  create() {
-    // method to draw the initially created Smith Chart
-
-    // set up container with the main svg and g for the chart
-    let g = d3.select("#smith-container")
-    .append("svg")
-      .attr("preserveAspectRatio", "xMinYMin meet")
-      .attr("viewBox", "0 0 " + (1 + 2*this._margin) + " " + (1 + 2*this._margin))
-    .append("g")
-      .attr("transform", "translate(" + this._margin 
-        + ", " + this._margin + ")")
-
-
+  update() {
     // scales for x (gamma_real), y (gamma_imag), radius, and angle
     const x = d3.scaleLinear()
       .domain([-1, 1])
@@ -160,14 +166,16 @@ export class SmithChart {
     const a = d3.scaleLinear()
       .domain([0, 2 * Math.PI])
       .range([0, -2 * Math.PI])
+ 
 
-    // select data from major lines array
-    let realPaths = g.selectAll("path").data(this._realLineValues)
-    let imagPaths = g.selectAll("path").data(this._imagLineValues)
+    let realPaths = this._realGroup.selectAll('path').data(this._realLineValues)
+    let imagPaths1 = this._imagGroup1.selectAll('path').data(this._imagLineValues)
+    let imagPaths2 = this._imagGroup2.selectAll('path').data(this._imagLineValues)
 
     // real circles
     realPaths.enter()
       .append("path")
+      .merge(realPaths)
       .attr("d", (d) => {
         const arc = getRealArc(d, 1E6, -1E6)
         let realCircle = d3.path()
@@ -177,10 +185,13 @@ export class SmithChart {
       .attr("stroke", this._realLineColor)
       .attr("stroke-width", 0.005)
       .attr("fill", "none")
-
+    realPaths.exit().remove()
+    
+    
     // postive imag circles
-    imagPaths.enter()
+    imagPaths1.enter()
       .append("path")
+      .merge(imagPaths1)
       .attr("d", (d) => {
         const arc = getImagArc(d, 0, 1E6)
         let imagCircle = d3.path()
@@ -190,10 +201,12 @@ export class SmithChart {
       .attr("stroke", this._imagLineColor)
       .attr("stroke-width", 0.005)
       .attr("fill", "none")
+    imagPaths1.exit().remove()
 
-      // negative imag circles
-    imagPaths.enter()
+    //   // negative imag circles
+    imagPaths2.enter()
       .append("path")
+      .merge(imagPaths2)
       .attr("d", (d) => {
         const arc = getImagArc(-d, 0, 1E6)
         let imagCircle = d3.path()
@@ -203,26 +216,26 @@ export class SmithChart {
       .attr("stroke", this._imagLineColor)
       .attr("stroke-width", 0.005)
       .attr("fill", "none")
+    imagPaths2.exit().remove()
 
-    // outer real circle
-    let outerCirlce = d3.path()
-    outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true)
-    g.append("path")
+     // outer real circle - could be moved outside of update at some point
+     let outerCirlce = d3.path()
+     outerCirlce.arc(x(0), y(0), r(1), a(0), a(2 * Math.PI), true)
+     this._outerCircle
       .attr("d", outerCirlce)
       .attr("stroke", this._realLineColor)
       .attr("stroke-width", 0.005)
       .attr("fill", "none")
-
-    // imag = 0 line
-    let imagLine = d3.path()
-    imagLine.moveTo(x(-1), y(0))
-    imagLine.lineTo(x(1), y(0))
-    g.append("path")
+ 
+     // imag = 0 line
+     let imagLine = d3.path()
+     imagLine.moveTo(x(-1), y(0))
+     imagLine.lineTo(x(1), y(0))
+     this._imagLine
       .attr("d", imagLine)
       .attr("stroke", this._imagLineColor)
       .attr("stroke-width", 0.005)
       .attr("fill", "none")
+  } 
 
-  }
-  
 }
