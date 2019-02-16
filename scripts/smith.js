@@ -95,14 +95,13 @@ function getImagArc(xL, rL1, rL2) {
 * The spacing defines the gamma points where constant z circles cross
 */
 
-export class SmithChart {
-
+class SmithChart {
   constructor(
     margin = 0.05,
     realLineValues = [0.2, 0.5, 1, 2, 5, 10],
     imagLineValues = [0.2, 0.5, 1, 2, 5, 10],
     realLineColor = '#0f0f0f',
-    imagLineColor = 'red',
+    imagLineColor = '#0f0f0f',
 
   ) {
     // initial smith chart properties
@@ -120,7 +119,6 @@ export class SmithChart {
     this._imagGroup2 = this._g.append('g') // group for negative imaginary lines
     this._outerCircle = this._g.append('path')
     this._imagLine = this._g.append('path')
-
   }
 
   setRealLineValues(realLineValues) {
@@ -239,3 +237,5 @@ export class SmithChart {
   } 
 
 }
+
+export { SmithChart }
