@@ -36,5 +36,8 @@ fileInput.addEventListener('change', event => {
 const reader = new FileReader()
 reader.onload = function(e) {
   let text = reader.result
-  console.log(text)
+  const splitText = text.split('\n')
+  console.log(splitText)
+
+  // remove comment and unnecessary lines. Get plot type
 }
