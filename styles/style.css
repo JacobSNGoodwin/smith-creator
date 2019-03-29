@@ -5,3 +5,8 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+#fileInput {
+  display: block;
+  margin: 2em auto;
+}

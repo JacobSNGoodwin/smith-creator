@@ -3,7 +3,6 @@ import { SmithChart } from './smith'
 
 let smithChart = new SmithChart()
 
-
 // smithChart.createContainer();
 // smithChart.setMargin(.25)
 
@@ -24,13 +23,18 @@ smithChart.update()
 //   }, 2000)
 // }, 2000)
 
-
 // smithChart.setRealLineValues([0.1, 0.2, 0.5, 0.75, 1, 2, 5, 10]);
 // smithChart.update();
-import plotExample from '../plots/noComments.tsv'
 
-d3.tsv(plotExample)
-  .then(data => {
-    console.log(data)
-  })
-  
+const fileInput = document.getElementById('fileInput')
+
+fileInput.addEventListener('change', event => {
+  const file = event.target.files[0]
+  reader.readAsText(file)
+})
+
+const reader = new FileReader()
+reader.onload = function(e) {
+  let text = reader.result
+  console.log(text)
+}
