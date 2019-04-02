@@ -21,7 +21,7 @@ const loadSparams = file => {
       let sParamData = []
       let text = reader.result
       const splitText = text.split('\n')
-      splitText.forEach(line => {
+      for (let line of splitText) {
         if (line[0] === '#') {
           const options = line.split(/ +/)
           sparams.freqUnit = options[1]
@@ -31,7 +31,7 @@ const loadSparams = file => {
         } else if (line[0] !== '!' && line) {
           sParamData.push(line)
         }
-      })
+      }
       console.log(sParamData)
       resolve(sparams)
     }
