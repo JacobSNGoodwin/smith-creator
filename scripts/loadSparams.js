@@ -9,28 +9,30 @@ const loadSparams = file => {
 
   return new Promise((resolve, reject) => {
     const sparams = {
-      freq: null,
+      freqUnit: null,
       parameter: null,
       format: null,
       resistance: null,
-      data: []
+      nPorts,
+      data: null
     }
 
     reader.onload = () => {
+      let sParamData = []
       let text = reader.result
       const splitText = text.split('\n')
       splitText.forEach(line => {
         if (line[0] === '#') {
           const options = line.split(/ +/)
-          sparams.freq = options[1]
+          sparams.freqUnit = options[1]
           sparams.parameter = options[2]
           sparams.format = options[3]
           sparams.resistance = options[5]
         } else if (line[0] !== '!' && line) {
-          // not a comment or empty line - set data
-          sparams.data.push(line.split(/ +/))
+          sParamData.push(line)
         }
       })
+      console.log(sParamData)
       resolve(sparams)
     }
     reader.onerror = error => {
