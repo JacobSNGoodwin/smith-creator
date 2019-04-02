@@ -30,6 +30,10 @@ const fileChange = targetElement => {
           sparams.data.push(line.split(/ +/))
         }
       })
+      resolve(sparams)
+    }
+    reader.onerror = error => {
+      reject('Failed to load file', error)
     }
   })
 }
