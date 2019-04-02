@@ -1,13 +1,13 @@
-const fileChange = targetElement => {
-  return new Promise((resolve, reject) => {
-    const fileInput = document.getElementById(targetElement)
-    let fileType = null
-    fileInput.addEventListener('change', event => {
-      const file = event.target.files[0]
-      fileType = file.name.split('.').pop()
-      reader.readAsText(file)
-    })
+const loadSparams = file => {
+  // get file type and number of ports to verify proper data formate
+  const fileType = file.name.split('.').pop()
+  const nPorts = +fileType.match(/\d+/g)[0]
 
+  // setup file reader
+  const reader = new FileReader()
+  reader.readAsText(file)
+
+  return new Promise((resolve, reject) => {
     const sparams = {
       freq: null,
       parameter: null,
@@ -15,7 +15,7 @@ const fileChange = targetElement => {
       resistance: null,
       data: []
     }
-    const reader = new FileReader()
+
     reader.onload = () => {
       let text = reader.result
       const splitText = text.split('\n')
@@ -34,9 +34,10 @@ const fileChange = targetElement => {
       resolve(sparams)
     }
     reader.onerror = error => {
+      reader.abort()
       reject('Failed to load file', error)
     }
   })
 }
 
-export default fileChange
+export default loadSparams
