@@ -1,6 +1,5 @@
 ! ATR250-TR10HAA
-! with matching circuit(22nH and 2.7pF in shunt), 
-  measured from dc to 550MHz
+! with matching circuit(22nH and 2.7pF in shunt), measured from dc to 550MHz
 !Date: Monday, February 22, 2010 08:29:26
 !Correction: S11(Full 2 Port(1,2)) 
 !S1P File: Measurement: S11:
