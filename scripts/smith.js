@@ -138,7 +138,6 @@ class SmithChart {
       .scaleLinear()
       .domain([0, 2 * Math.PI])
       .range([0, -2 * Math.PI])
-    this.update()
   }
 
   setRealLineValues(realLineValues) {
