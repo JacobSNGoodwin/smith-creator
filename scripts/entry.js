@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import { SmithChart } from './smith'
 
-let smithChart = new SmithChart()
+let smithChart = new SmithChart('#smith-container')
 
 // smithChart.createContainer();
 // smithChart.setMargin(.25)
