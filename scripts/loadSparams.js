@@ -1,9 +1,10 @@
 const fileChange = targetElement => {
   return new Promise((resolve, reject) => {
     const fileInput = document.getElementById(targetElement)
-
+    let fileType = null
     fileInput.addEventListener('change', event => {
       const file = event.target.files[0]
+      fileType = file.name.split('.').pop()
       reader.readAsText(file)
     })
 
