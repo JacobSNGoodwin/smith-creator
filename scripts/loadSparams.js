@@ -18,21 +18,36 @@ const loadSparams = file => {
     }
 
     reader.onload = () => {
-      let sParamData = []
-      let text = reader.result
-      const splitText = text.split('\n')
-      for (let line of splitText) {
-        if (line[0] === '#') {
-          const options = line.split(/ +/)
-          sparams.freqUnit = options[1]
-          sparams.parameter = options[2]
-          sparams.format = options[3]
-          sparams.resistance = options[5]
-        } else if (line[0] !== '!' && line) {
-          sParamData.push(line)
+      // let sParamData = []
+      let textArray = reader.result.split('\n')
+
+      let options = null
+      let optionsIndex = null
+      let dataIndex = null // line where data starts (could be comments betten)
+      for (let i = 0; i < textArray.length; i++) {
+        if (textArray[i][0] === '#') {
+          optionsIndex = i
+          options = textArray[i]
+        }
+        if (
+          optionsIndex &&
+          textArray[i] &&
+          i > optionsIndex &&
+          textArray[i][0] !== '!'
+        ) {
+          // start of data which needs to be handled different for different
+          // values of nPort
+          dataIndex = i
+          break
         }
       }
-      console.log(sParamData)
+
+      const linesPerFreq = nPorts > 2 ? nPorts : 1
+
+      for (let i = dataIndex; i < textArray.length; i += linesPerFreq) {
+        console.log()
+      }
+
       resolve(sparams)
     }
     reader.onerror = error => {
