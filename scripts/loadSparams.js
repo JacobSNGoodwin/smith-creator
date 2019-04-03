@@ -8,17 +8,10 @@ const loadSparams = file => {
   reader.readAsText(file)
 
   return new Promise((resolve, reject) => {
-    const sparams = {
-      freqUnit: null,
-      parameter: null,
-      format: null,
-      resistance: null,
-      nPorts,
-      data: null
-    }
+    const sparams = {}
 
     reader.onload = () => {
-      // let sParamData = []
+      let sParamData = []
       let textArray = reader.result.split('\n')
 
       let options = null
@@ -42,10 +35,18 @@ const loadSparams = file => {
         }
       }
 
-      const linesPerFreq = nPorts > 2 ? nPorts : 1
+      const dataArray = textArray
+        .slice(dataIndex)
+        .join(' ')
+        .split(/\s+/)
 
-      for (let i = dataIndex; i < textArray.length; i += linesPerFreq) {
-        console.log()
+      for (let i = 0; i < dataArray.length; i += 1 + 2 * nPorts) {
+        const dataAtFreq = dataArray.slice(i, i + 1 + 2 * nPorts)
+        if (dataAtFreq.length !== i + 1 + 2 * nPorts) {
+          break
+        }
+        const freqPoint = dataAtFreq[0]
+        for (let j = 1; j < dataAtFreq.length; j++) {}
       }
 
       resolve(sparams)
