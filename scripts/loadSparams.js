@@ -8,10 +8,7 @@ const loadSparams = file => {
   reader.readAsText(file)
 
   return new Promise((resolve, reject) => {
-    const sparams = {}
-
     reader.onload = () => {
-      let sParamData = []
       let textArray = reader.result.split('\n')
 
       let optionsIndex = null
@@ -35,10 +32,16 @@ const loadSparams = file => {
 
       // parse options into desired format
       const options = parseOptions(textArray[optionsIndex])
+      const data = parseData(textArray.slice(dataIndex), nPorts)
 
-      console.log(options)
+      // console.log(data)
 
-      resolve(sparams)
+      const sParams = {
+        nPorts,
+        ...options
+      }
+
+      resolve(sParams)
     }
     reader.onerror = error => {
       reader.abort()
@@ -61,7 +64,7 @@ const parseOptions = optionsString => {
   const optionsArray = optionsString
     .trim()
     .toUpperCase()
-    .split(/ +/)
+    .split(/\s+/)
 
   while (optionsArray.length > 0) {
     // shift elements out of array as they're found
@@ -93,6 +96,30 @@ const parseOptions = optionsString => {
     }
   }
   return options
+}
+
+const parseData = (dataLines, nPorts) => {
+  let data = []
+
+  // maybe a little slow to do this, but I was splitting tokens inside previous for loop, so I prefer this method
+  const dataTokens = dataLines
+    .join(' ')
+    .trim()
+    .split(/\s+/)
+
+  for (let i = 0; i < dataTokens.length; i += 1 + 2 * nPorts * nPorts) {
+    const dataAtFreq = dataTokens.slice(i, i + 1 + 2 * nPorts * nPorts)
+    const freq = +dataAtFreq.shift()
+    let sParams = [[]]
+    for (let j = 0; j < dataAtFreq.length; j += 2) {
+      const row = Math.floor(j / (2 * nPorts))
+      const col = (j % (2 * nPorts)) / 2
+      sParams[row][col] = { val1: dataAtFreq[j], val2: dataAtFreq[j + 1] }
+    }
+    console.log(sParams)
+  }
+
+  return data
 }
 
 export default loadSparams

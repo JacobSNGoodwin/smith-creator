@@ -10,6 +10,6 @@ const fileInput = document.getElementById('fileInput')
 fileInput.addEventListener('change', event => {
   const file = event.target.files[0]
   loadSparams(file).then(data => {
-    console.log('Data loaded')
+    console.log(data)
   })
 })
