@@ -32,13 +32,14 @@ const loadSparams = file => {
 
       // parse options into desired format
       const options = parseOptions(textArray[optionsIndex])
-      const data = parseData(textArray.slice(dataIndex), nPorts)
+      const data = parseData(textArray.slice(dataIndex), { nPorts, ...options })
 
-      // console.log(data)
+      console.log(data)
 
       const sParams = {
         nPorts,
-        ...options
+        ...options,
+        data
       }
 
       resolve(sParams)
@@ -98,28 +99,29 @@ const parseOptions = optionsString => {
   return options
 }
 
-const parseData = (dataLines, nPorts) => {
+const parseData = (dataLines, options) => {
   let data = []
 
-  // maybe a little slow to do this, but I was splitting tokens inside previous for loop, so I prefer this method
-  const dataTokens = dataLines
-    .join(' ')
-    .trim()
-    .split(/\s+/)
-
-  for (let i = 0; i < dataTokens.length; i += 1 + 2 * nPorts * nPorts) {
-    const dataAtFreq = dataTokens.slice(i, i + 1 + 2 * nPorts * nPorts)
-    const freq = +dataAtFreq.shift()
-    let sParams = [[]]
-    for (let j = 0; j < dataAtFreq.length; j += 2) {
-      const row = Math.floor(j / (2 * nPorts))
-      const col = (j % (2 * nPorts)) / 2
-      sParams[row][col] = { val1: dataAtFreq[j], val2: dataAtFreq[j + 1] }
+  if (options.nPorts === 2) {
+    // this is, unfortunately, the only case handled differently than the others
+    // prefer to do one check at the top, even though code is somewhat repetitive
+    for (let line of dataLines) {
+      const lineElements = line.trim().split(/\s+/)
+      const freq = lineElements.shift()
+      const sParams = [
+        [
+          { a: lineElements[0], b: lineElements[1] },
+          { a: lineElements[4], b: lineElements[5] }
+        ],
+        [
+          { a: lineElements[2], b: lineElements[3] },
+          { a: lineElements[6], b: lineElements[7] }
+        ]
+      ]
+      data.push({ freq, sParams })
     }
-    console.log(sParams)
+    return data
   }
-
-  return data
 }
 
-export default loadSparams
+export { loadSparams }
